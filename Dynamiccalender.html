@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #9b59b6;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .wrapper {
+            width: 450px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .wrapper header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 25px 30px 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        .wrapper header .current-date {
+            font-size: 1.45rem;
+            font-weight: 500;
+            margin: 0;
+        }
+        .wrapper header .icons i {
+            height: 38px;
+            width: 38px;
+            color: #878787;
+            font-size: 1.9rem;
+            margin: 0 5px;
+            cursor: pointer;
+            text-align: center;
+            line-height: 38px;
+            border-radius: 50%;
+            background: #f2f2f2;
+        }
+        .wrapper header .icons i:hover {
+            background: #afadad;
+        }
+        .calender {
+            padding: 20px;
+        }
+        .calender .weeks {
+            display: flex;
+            justify-content: space-around;
+            list-style: none;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .calender .weeks li {
+            width: 50px;
+            text-align: center;
+        }
+        .calender .days {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .calender .days li {
+            position: relative;
+            width: calc(100% / 7);
+            text-align: center;
+            padding: 10px 0;
+            cursor: pointer;
+        }
+        .calender .days li:hover::before {
+            background: #c7c5c5;
+        }
+        .calender .days li.active {
+            color:white;
+            background: #9d1bd1;
+            border-radius:100%;
+        }
+        }
+        .calender .days li.inactive {
+            color: #aaa;
+        }
+        .calender .days li::before {
+            content: "";
+            display: block;
+            height: 40px;
+            width: 40px;
+            border-radius: 50%;
+            background: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <p class="current-date">June 2024</p>
+            <div class="icons">
+                <i class="fas fa-chevron-left"></i>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </header>
+        <div class="calender">
+            <ul class="weeks">
+                <li>Sun</li>
+                <li>Mon</li>
+                <li>Tue</li>
+                <li>Wed</li>
+                <li>Thu</li>
+                <li>Fri</li>
+                <li>Sat</li>
+            </ul>
+            <ul class="days"></ul>
+        </div>
+    </div>
+
+    <script>
+        const currentData = document.querySelector(".current-date");
+        const daysTag = document.querySelector(".days");
+        const prevNextIcon = document.querySelectorAll(".icons i");
+
+        let date = new Date();
+        let currYear = date.getFullYear();
+        let currMonth = date.getMonth();
+
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        const renderCalendar = () => {
+            let firstDayOfMonth = new Date(currYear, currMonth, 1).getDay();
+            let lastDateOfMonth = new Date(currYear, currMonth + 1, 0).getDate();
+            let lastDayOfLastMonth = new Date(currYear, currMonth, 0).getDate();
+            let liTag = "";
+
+            for (let i = firstDayOfMonth; i > 0; i--) {
+                liTag += `<li class="inactive">${lastDayOfLastMonth - i + 1}</li>`;
+            }
+
+            for (let i = 1; i <= lastDateOfMonth; i++) {
+                let isToday = i === date.getDate() && currMonth === new Date().getMonth() && currYear === new Date().getFullYear() ? "active" : "";
+                liTag += `<li class="${isToday}">${i}</li>`;
+            }
+
+            let remainingDays = 42 - (lastDateOfMonth + firstDayOfMonth);
+
+            for (let i = 1; i <= remainingDays; i++) {
+                liTag += `<li class="inactive">${i}</li>`;
+            }
+
+            currentData.innerText = `${months[currMonth]} ${currYear}`;
+            daysTag.innerHTML = liTag;
+        }
+
+        renderCalendar();
+
+        prevNextIcon.forEach(icon => {
+            icon.addEventListener("click", () => {
+                currMonth = icon.classList.contains("fa-chevron-left") ? currMonth - 1 : currMonth + 1;
+
+                if (currMonth < 0) {
+                    currMonth = 11;
+                    currYear--;
+                } else if (currMonth > 11) {
+                    currMonth = 0;
+                    currYear++;
+                }
+
+                renderCalendar();
+            });
+        });
+    </script>
+</body>
+</html>
